@@ -12,7 +12,7 @@ from timm.models.efficientnet_blocks import SqueezeExcite, ConvBnAct
 from timm.models.registry import register_model
 
 import time
-
+import pandas as pd
 __all__ = ['RepGhostNet']
 
 
@@ -475,6 +475,61 @@ def repghostnet_200(pretrained=False, **kwargs) -> RepGhostNet:
 
 
 if __name__ == '__main__':
+    
+    print("run cpu mode")
+    model = repghostnet_050(pretrained=True, pretrained_cfg=default_cfgs['repghostnet_050.in1k'])
+    model = model
+    
+    df = pd.DataFrame()
+    batch_size_list = [1,128]
+    print("original model : repghost 050")
+    for batch_size in batch_size_list:
+        gen_img = torch.randn(batch_size, 3, 224, 224)
+        gen_img = gen_img
+
+        print(f"warmup time (cpu): batch_size: {batch_size}")
+        for _ in range(5):
+            out=model(gen_img)
+        
+        print(f"start: batch size {batch_size}")
+
+        start_time = time.time()
+        avg_time = 10
+        for _ in range(avg_time):
+            out = model(gen_img)
+
+        end_time = time.time()
+        print(f"batch size {batch_size}' average run time (cpu): {(end_time - start_time)/avg_time}")
+        result_df = pd.DataFrame({"type":"cpu", "batch_size": batch_size, "time": (end_time - start_time)/avg_time, "Reparam": 'No'}, index=[0])
+        df = pd.concat([df, result_df], ignore_index=True)
+        print("=========================================================")
+
+    print("repparameterized model")
+    model = repghost_model_convert(model, save_path=None, do_copy=True)
+    for batch_size in batch_size_list:
+        gen_img = torch.randn(batch_size, 3, 224, 224)
+        gen_img = gen_img
+
+        print(f"warmup time: batch_size: {batch_size}")
+        for _ in range(5):
+            out=model(gen_img)
+        
+        print(f"start: batch size {batch_size}")
+
+        start_time = time.time()
+        avg_time = 10
+        for _ in range(avg_time):
+            out = model(gen_img)
+
+        end_time = time.time()
+        print(f"batch size {batch_size}' average run time (cpu): {(end_time - start_time)/avg_time}")
+        result_df = pd.DataFrame({"type":"cpu", "batch_size": batch_size, "time": (end_time - start_time)/avg_time, "Reparam": 'Yes'}, index=[0])
+        df = pd.concat([df, result_df], ignore_index=True)
+
+        print("=========================================================")
+
+    print("*"*50)
+    print("run gpu mode")
     model = repghostnet_050(pretrained=True, pretrained_cfg=default_cfgs['repghostnet_050.in1k'])
     model = model.cuda()
 
@@ -484,7 +539,7 @@ if __name__ == '__main__':
         gen_img = torch.randn(batch_size, 3, 224, 224)
         gen_img = gen_img.cuda()
 
-        print(f"warmup time: batch_size: {batch_size}")
+        print(f"warmup time (gpu): batch_size: {batch_size}")
         for _ in range(5):
             out=model(gen_img)
         
@@ -496,17 +551,19 @@ if __name__ == '__main__':
             out = model(gen_img)
 
         end_time = time.time()
-        print(f"batch size {batch_size}' average run time : {(end_time - start_time)/avg_time}")
+        print(f"batch size {batch_size}' average run time (gpu): {(end_time - start_time)/avg_time}")
+        result_df = pd.DataFrame({"type":"gpu", "batch_size": batch_size, "time": (end_time - start_time)/avg_time, "Reparam": 'No'}, index=[0])
+        df = pd.concat([df, result_df], ignore_index=True)
+
         print("=========================================================")
 
     print("repparameterized model")
     model = repghost_model_convert(model, save_path=None, do_copy=True)
-    model = model.cuda()
     for batch_size in batch_size_list:
         gen_img = torch.randn(batch_size, 3, 224, 224)
         gen_img = gen_img.cuda()
 
-        print(f"warmup time: batch_size: {batch_size}")
+        print(f"warmup time (gpu): batch_size: {batch_size}")
         for _ in range(5):
             out=model(gen_img)
         
@@ -518,5 +575,9 @@ if __name__ == '__main__':
             out = model(gen_img)
 
         end_time = time.time()
-        print(f"batch size {batch_size}' average run time : {(end_time - start_time)/avg_time}")
+        print(f"batch size {batch_size}' average run time (gpu): {(end_time - start_time)/avg_time}")
+        result_df = pd.DataFrame({"type":"gpu", "batch_size": batch_size, "time": (end_time - start_time)/avg_time, "Reparam": 'Yes'}, index=[0])
+        df = pd.concat([df, result_df], ignore_index=True)
+
         print("=========================================================")
+    df.to_csv("repghost.csv")
