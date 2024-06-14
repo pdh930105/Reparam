@@ -1,8 +1,8 @@
 export USERID=$(id -u)
 export GROUPID=$(id -g)
 export USERNAME=$(whoami)
-export CONTAINERNAME=${1:-idslab_reparam_jetson}
-export COMPOSE_PROJECT_NAME=${2:-idslab_reparam_jetson}
+export CONTAINERNAME=${1:-reparam_raspberry5}
+export COMPOSE_PROJECT_NAME=${2:-reparam_raspberry5}
 #export CONTAINERNAME=${CONTAINERNAME:-pdh_bq_pt_2210}
 printf "USERID=%s\n" $USERID 
 printf "GROUPID=%s\n" $GROUPID 

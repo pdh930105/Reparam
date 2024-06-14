@@ -1,4 +1,4 @@
-FROM nvcr.io/nvidia/l4t-pytorch:r32.5.0-pth1.7-py3 as base
+FROM ultralytics/ultralytics:latest-arm64 as base
 
 ENV DEBIAN_FRONTEND noninteractive
 
