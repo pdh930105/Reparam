@@ -11,7 +11,7 @@ services:
           container_name: ${CONTAINERNAME} 
           network_mode: "host"
           volumes:
-            - "/home/${USERNAME}/workspace:/home/${USERNAME}/workspace"
+            - "/home/${USERNAME}/workspace:/workspace"
           environment:
             - "DISPLAY"
           device_cgroup_rules:

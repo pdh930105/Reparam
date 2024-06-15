@@ -20,7 +20,7 @@ RUN adduser $USER_NAME sudo
 RUN echo "$USER_NAME ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 RUN pip install pyhocon
 # set timm version (based on jetson timm version)
-RUN pip install timm==0.6.12
+RUN pip install timm==1.0.3
 RUN pip install wandb
 RUN pip install easydict
 RUN pip install mmcv
