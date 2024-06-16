@@ -36,6 +36,7 @@ if __name__ == '__main__':
     df = pd.DataFrame()
     run_config = edict()
     os_info = os.uname().machine
+    run_config.os_info = os_info
     
     if os_info == 'x86_64':
         print("server mode")
@@ -59,9 +60,9 @@ if __name__ == '__main__':
                 gen_img = gen_img.cuda()
                 model = model.cuda()
             print(f"warmup time ({os_mode}): batch_size: {batch_size}")
-            for _ in range(5):
+            for _ in range(2):
                 out=model(gen_img)
-            
+            print("warm up ended")
             print(f"start: batch size {batch_size}")
 
             start_time = time.time()
@@ -71,7 +72,7 @@ if __name__ == '__main__':
 
             end_time = time.time()
             print(f"batch size {batch_size}' average run time ({os_mode}): {(end_time - start_time)/avg_time}")
-            result_df = pd.DataFrame({"type": os_mode, "batch_size": batch_size, "average_run_time": (end_time - start_time)/avg_time, "Reparam": 'No'}, index=[0])
+            result_df = pd.DataFrame({"os_type": run_config.os_info, "type": os_mode, "batch_size": batch_size, "average_run_time": (end_time - start_time)/avg_time, "Reparam": 'No'}, index=[0])
             df = pd.concat([df, result_df])
             print("=========================================================")
 
@@ -85,7 +86,7 @@ if __name__ == '__main__':
                 gen_img = gen_img.cuda()
 
             print(f"warmup time: batch_size: {batch_size}")
-            for _ in range(5):
+            for _ in range(2):
                 out=model(gen_img)
             
             print(f"start: batch size {batch_size}")
@@ -97,7 +98,7 @@ if __name__ == '__main__':
 
             end_time = time.time()
             print(f"batch size {batch_size}' average run time ({os_mode}): {(end_time - start_time)/avg_time}")
-            result_df = pd.DataFrame({"type": os_mode, "batch_size": batch_size, "average_run_time": (end_time - start_time)/avg_time, "Reparam": 'Yes'}, index=[0])
+            result_df = pd.DataFrame({"os_type": run_config.os_info,"type": os_mode, "batch_size": batch_size, "average_run_time": (end_time - start_time)/avg_time, "Reparam": 'Yes'}, index=[0])
             df = pd.concat([df, result_df])
             print("=========================================================")
     print(df)
