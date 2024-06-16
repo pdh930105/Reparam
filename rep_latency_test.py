@@ -33,7 +33,10 @@ if __name__ == '__main__':
 
     model = timm.create_model(args.model, pretrained=True)
     model.eval()
-    df = pd.DataFrame()
+    if os.path.exists(f"latency_{args.model}.csv"):
+        df = pd.read_csv(f"latency_{args.model}.csv", index_col=None)
+    else:
+        df = pd.DataFrame()
     run_config = edict()
     os_info = os.uname().machine
     run_config.os_info = os_info
