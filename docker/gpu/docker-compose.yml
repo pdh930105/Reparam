@@ -11,15 +11,7 @@ services:
           container_name: ${CONTAINERNAME} 
           network_mode: "host"
           volumes:
-            - "/home/${USERNAME}/workspace:/home/${USERNAME}/workspace"
-            - "/dev/:/dev/"
-            - "/tmp/.X11-unix:/tmp/.X11-unix"
-            - "/dev/snd:/dev/snd"
-            - "$HOME/.Xauthority:/$HOME/.Xauthority:rw"
-            - "/dataset:/dataset"
-            - "/data:/data"
-            - "/home/${USERNAME}/.ssh/:/home/${USERNAME}/.ssh/"
-            - "/home/${USERNAME}/.cache/huggingface/:/home/${USERNAME}/.cache/huggingface"
+            - "/home/${USERNAME}/workspace:/workspace"
           environment:
             - "DISPLAY"
           device_cgroup_rules:
