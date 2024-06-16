@@ -1,0 +1,3 @@
+,os_type,type,batch_size,average_run_time,Reparam
+0,aarch64,cpu,1,0.0899547815322876,No
+0,aarch64,cpu,1,0.08005967140197753,Yes
